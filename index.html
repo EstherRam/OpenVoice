@@ -1,0 +1,337 @@
+
+<!--Start of code sourced from ChatGPT following prototyping in Figma-->
+<!--https://chatgpt.com/share/6984c01e-4974-800e-86c6-f89298c4c3f8-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenVoice – Fully Working Integrated App</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:#0b1220;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:#fff;
+}
+button{border:none;outline:none;background:none;cursor:pointer;color:#fff}
+
+.app{width:834px;margin:0 auto;min-height:100vh}
+
+/* HEADER */
+.header{background:#2A3040;padding:20px 28px 26px}
+.header-top{display:flex;justify-content:space-between;align-items:center}
+
+.help-btn{
+  background:#F04438;
+  padding:8px 18px;
+  border-radius:999px;
+  font-size:15px;
+  font-weight:600;
+  transition:.2s;
+}
+.help-btn.active-help{
+  background:#FFFFFF;
+  color:#F04438;
+}
+
+.header-icons{display:flex;gap:12px}
+.header-icon{
+  width:40px;height:40px;border-radius:12px;
+  background:#3A4252;
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* NAV */
+.nav-bar{background:#8694AF}
+.nav-inner{
+  padding:18px 32px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.nav-group{display:flex;gap:28px}
+.nav-pill{
+  background:#3E4A5E;
+  padding:14px 28px;
+  border-radius:999px;
+  font-size:23px;
+  font-weight:700;
+  white-space:nowrap;
+  transition:.2s;
+}
+.nav-pill.sentence-active{background:#2B5CF3}
+.nav-pill.feeling-active{background:#D32475}
+.nav-pill.want-active{background:#8B22F1}
+
+.nav-help{
+  width:60px;height:60px;border-radius:50%;
+  background:#3E4A5E;
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;
+}
+
+/* SENTENCE BAR */
+.sentence-bar{padding:20px 28px}
+.sentence-input{
+  background:#F2FFBF;
+  border-radius:16px;
+  padding:16px 20px;
+  display:flex;justify-content:space-between;align-items:center;
+  color:#000;
+}
+.sentence-text{flex:1;font-size:18px}
+.sentence-actions{display:flex;gap:16px;font-size:20px;cursor:pointer}
+
+/* CONTENT */
+.content{padding:0 28px 40px}
+.section-title{font-size:16px;color:#9AA4B2;margin:24px 0 12px}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:18px}
+.grid.small{grid-template-columns:repeat(4,1fr)}
+.tile{
+  height:120px;border-radius:18px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:500;
+  cursor:pointer;
+}
+.subject{background:#3F63F4}
+.things{background:#8A3FFC}
+.actions{background:#4AA6A6}
+.other{background:#7B859B}
+.feeling{background:#C23A78}
+.want{background:linear-gradient(135deg,#9C4DFF,#6E1FD9)}
+.add{background:#2A3040;font-size:28px}
+
+/* EMERGENCY */
+.emergency-wrapper{padding:40px 28px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.emergency-card{
+  background:#E04F3C;
+  border-radius:28px;height:260px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:90px;font-weight:700;
+  box-shadow:0 10px 25px rgba(0,0,0,.4);
+}
+.mom-card{border-radius:28px;overflow:hidden;box-shadow:0 10px 25px rgba(0,0,0,.4)}
+.mom-card img{width:100%;height:180px;object-fit:cover}
+.mom-label{
+  background:#E04F3C;padding:24px;
+  font-size:40px;font-weight:600;text-align:center;
+}
+
+.hidden{display:none}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<header class="header">
+  <div class="header-top">
+    <button id="help-btn" class="help-btn">⚠ Get help</button>
+    <div class="header-icons">
+      <div class="header-icon">🌙</div>
+      <div class="header-icon">☀️</div>
+    </div>
+  </div>
+</header>
+
+<div class="nav-bar">
+  <nav class="nav-inner">
+    <div class="nav-group">
+      <button id="tab-sentence" class="nav-pill sentence-active">💬 Sentence building</button>
+      <button id="tab-feeling" class="nav-pill">♡ I am feeling</button>
+      <button id="tab-want" class="nav-pill">💡 I want</button>
+    </div>
+    <div class="nav-help">?</div>
+  </nav>
+</div>
+
+<div id="sentence-bar" class="sentence-bar">
+  <div class="sentence-input">
+    <span id="sentence-text" class="sentence-text"></span>
+    <div class="sentence-actions">
+      <span id="speak-btn">🔊</span>
+      <span id="clear-btn">🗑️</span>
+    </div>
+  </div>
+</div>
+
+<main>
+
+<!-- SENTENCE -->
+<section id="view-sentence" class="content">
+  <div class="section-title">Subject</div>
+  <div class="grid">
+    <div class="tile subject">I</div>
+    <div class="tile subject">You</div>
+    <div class="tile subject">We</div>
+    <div class="tile subject">They</div>
+    <div class="tile subject">She</div>
+    <div class="tile add">+</div>
+  </div>
+
+  <div class="section-title">Things</div>
+  <div class="grid">
+    <div class="tile things">Want</div>
+    <div class="tile things">Need</div>
+    <div class="tile things">Like</div>
+    <div class="tile things">Have</div>
+    <div class="tile things">See</div>
+    <div class="tile things">Go</div>
+    <div class="tile things">Eat</div>
+    <div class="tile things">Drink</div>
+    <div class="tile things">Play</div>
+    <div class="tile add">+</div>
+  </div>
+
+  <div class="section-title">Actions</div>
+  <div class="grid">
+    <div class="tile actions">Water</div>
+    <div class="tile actions">Food</div>
+    <div class="tile actions">Help</div>
+    <div class="tile actions">Break</div>
+    <div class="tile actions">Bathroom</div>
+    <div class="tile actions">Sleep</div>
+    <div class="tile actions">Music</div>
+    <div class="tile actions">Stop</div>
+    <div class="tile add">+</div>
+  </div>
+
+  <div class="section-title">Other Words</div>
+  <div class="grid small">
+    <div class="tile other">Now</div>
+    <div class="tile other">Later</div>
+    <div class="tile other">Yes</div>
+    <div class="tile add">+</div>
+  </div>
+</section>
+
+<!-- FEELING -->
+<section id="view-feeling" class="content hidden">
+  <div class="grid">
+    <div class="tile feeling">Sleepy</div>
+    <div class="tile feeling">Happy</div>
+    <div class="tile feeling">Sad</div>
+    <div class="tile feeling">Mad</div>
+    <div class="tile feeling">Surprised</div>
+    <div class="tile feeling">Confused</div>
+    <div class="tile add">+</div>
+  </div>
+</section>
+
+<!-- WANT -->
+<section id="view-want" class="content hidden">
+  <div class="grid">
+    <div class="tile want">Bathroom</div>
+    <div class="tile want">Help</div>
+    <div class="tile want">Water</div>
+    <div class="tile want">Food</div>
+    <div class="tile want">Break</div>
+    <div class="tile want">To talk</div>
+    <div class="tile want">To run</div>
+    <div class="tile want">Play</div>
+    <div class="tile want">To read</div>
+    <div class="tile want">TV</div>
+    <div class="tile want">Quiet</div>
+    <div class="tile want">A hug</div>
+    <div class="tile want">Music</div>
+    <div class="tile add">+</div>
+  </div>
+</section>
+
+<!-- HELP -->
+<section id="view-help" class="emergency-wrapper hidden">
+  <div class="grid-2">
+    <div class="emergency-card">911</div>
+    <div class="mom-card">
+      <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2">
+      <div class="mom-label">Call Mom</div>
+    </div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<script>
+const helpBtn=document.getElementById('help-btn');
+const tabSentence=document.getElementById('tab-sentence');
+const tabFeeling=document.getElementById('tab-feeling');
+const tabWant=document.getElementById('tab-want');
+
+const viewSentence=document.getElementById('view-sentence');
+const viewFeeling=document.getElementById('view-feeling');
+const viewWant=document.getElementById('view-want');
+const viewHelp=document.getElementById('view-help');
+const sentenceBar=document.getElementById('sentence-bar');
+
+function resetAll(){
+  helpBtn.classList.remove('active-help');
+  tabSentence.classList.remove('sentence-active');
+  tabFeeling.classList.remove('feeling-active');
+  tabWant.classList.remove('want-active');
+
+  viewSentence.classList.add('hidden');
+  viewFeeling.classList.add('hidden');
+  viewWant.classList.add('hidden');
+  viewHelp.classList.add('hidden');
+}
+
+tabSentence.onclick=()=>{
+  resetAll();
+  tabSentence.classList.add('sentence-active');
+  viewSentence.classList.remove('hidden');
+  sentenceBar.classList.remove('hidden');
+};
+
+tabFeeling.onclick=()=>{
+  resetAll();
+  tabFeeling.classList.add('feeling-active');
+  viewFeeling.classList.remove('hidden');
+  sentenceBar.classList.add('hidden');
+};
+
+tabWant.onclick=()=>{
+  resetAll();
+  tabWant.classList.add('want-active');
+  viewWant.classList.remove('hidden');
+  sentenceBar.classList.add('hidden');
+};
+
+helpBtn.onclick=()=>{
+  resetAll();
+  helpBtn.classList.add('active-help');
+  viewHelp.classList.remove('hidden');
+  sentenceBar.classList.add('hidden');
+};
+
+/* SENTENCE BUILDER */
+let sentence=[];
+const sentenceText=document.getElementById('sentence-text');
+const speakBtn=document.getElementById('speak-btn');
+const clearBtn=document.getElementById('clear-btn');
+
+document.querySelectorAll('#view-sentence .tile').forEach(tile=>{
+  tile.addEventListener('click',()=>{
+    if(tile.classList.contains('add')) return;
+    sentence.push(tile.textContent.trim());
+    sentenceText.textContent=sentence.join(' ');
+  });
+});
+
+clearBtn.onclick=()=>{
+  sentence=[];
+  sentenceText.textContent='';
+};
+
+speakBtn.onclick=()=>{
+  if(!sentence.length) return;
+  const utterance=new SpeechSynthesisUtterance(sentence.join(' '));
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utterance);
+};
+</script>
+
+</body>
+</html>
